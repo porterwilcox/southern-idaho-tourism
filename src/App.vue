@@ -1,31 +1,53 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
     <router-view/>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+/* globals */
+:root {
+  --green: #005e38;
+  --baige: #f6f3ea;
+  --link-green: #74a893;
 }
-#nav {
-  padding: 30px;
+.text-green {
+  color: var(--green)!important;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.text-link-green {
+  color: var(--link-green)!important;
 }
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.text-black {
+  color: black!important;
+}
+.bg-green {
+  background: var(--green)!important;
+}
+.bg-baige {
+  background: var(--baige)!important;
+}
+.w100 {
+  width: 100vw;
+}
+.action {
+  cursor: pointer;
+}
+/* ------------ */
+/* bs-overrides */
+.input-group-text {
+  border: none!important;
+  border-radius: 0!important;
+}
+.navbar-toggler {
+    color: var(--green)!important;
+    border: none!important;
+    padding: 0;
+}
+.dropleft .dropdown-menu {
+    /* top: -10px; */
+    right: -50%;
+    left: auto;
+    margin-top: 0;
+    margin-right: .125rem;
 }
 </style>
