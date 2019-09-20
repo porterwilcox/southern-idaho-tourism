@@ -20,8 +20,14 @@
 .text-black {
   color: black!important;
 }
+.text-baige {
+  color: var(--baige)!important;
+}
 .bg-green {
   background: var(--green)!important;
+}
+.bg-link-green {
+  background: var(--link-green)!important;
 }
 .bg-baige {
   background: var(--baige)!important;

@@ -78,18 +78,35 @@
         </div>
       </div>
     </div>
-    <div class="row justify-content-center">
+    <!-- NOTE commented out to limit api hits when developing other features -->
+    <!-- <div class="row justify-content-center">
       <map-box class="w-75"></map-box>
+    </div> -->
+    <div v-if="!scanQR" @click="scanQR = true" class="text-center py-3 action">
+      <img src="https://raw.githubusercontent.com/gruhn/vue-qrcode-reader/master/.github/logo.png" height="30px" alt="qr-code">
+      <p class="text-link-green">Click to Scan QR Code</p>
     </div>
+    <div class="py-3" v-else>
+      <QRCodeScanner />
+    </div>
+    <footer class="row py-3 bg-link-green align-items-center justify-content-end">
+      <p class="text-dark m-0">porter wilcox 2019</p>
+    </footer>
   </div>
 </template>
 
 <script>
   import MapBox from '@/components/Map.vue'
+  import QRCodeScanner from '@/components/QRCodeScanner.vue'
 
   export default {
     name: "home",
-    components: { MapBox }
+    data() {
+      return {
+        scanQR: false
+      }
+    },
+    components: { MapBox, QRCodeScanner }
   };
 </script>
 
@@ -173,5 +190,9 @@
     transform: translate(-50%, -50%);
     font-family: 'oswald', 'HelveticaNeue', 'Helvetica Neue', 'Helvetica-Neue', Helvetica, Arial, sans-serif;
     text-transform: uppercase;
+  }
+
+  .text-center.py-3.action:hover p {
+    text-decoration: underline;
   }
 </style>

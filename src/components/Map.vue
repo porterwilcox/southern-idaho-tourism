@@ -3,79 +3,135 @@
 </template>
 
 <script>
-import MapBoxGL from "mapbox-gl";
+  import MapBoxGL from "mapbox-gl";
+  import { MapBoxAccessToken } from '@/utils/secrets.js'
 
-let map;
+  let map;
+  let popup = new MapBoxGL.Popup();
 
-export default {
-  name: "map-box",
-  mounted() {
-    map = new MapBoxGL.Map({
-      container: "map-box",
-      style: "mapbox://styles/mapbox/satellite-streets-v10",
-      center: [40.712776, -74.005974],
-    //   center: [42.56318, -114.46028],
-      zoom: 12,
-      accessToken: "pk.eyJ1IjoiaWFtcG9ydGVyIiwiYSI6ImNrMHBmd2hqYTA0cHIzbXBoMDhyeWFrbTAifQ.pXNhzNQWYK-0aP8h78VzEg"
-    });
-  },
-  props: [],
-  data() {
-    return {
-      features: {
-        outdoor: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                Name: "Shoshone Falls",
-                Address: "4155 Shoshone Falls Grade, Twin Falls, ID 83301"
+  export default {
+    name: "map-box",
+    mounted() {
+      map = new MapBoxGL.Map({
+        container: "map-box",
+        style: "mapbox://styles/mapbox/satellite-streets-v10",
+        center: [-114.46028, 42.56318],
+        zoom: 12,
+        accessToken: MapBoxAccessToken
+      });
+      map.on('load', () => {
+        this.genMapLayers()
+        this.initMapControls()
+        this.initMapIconsPopup()
+      })
+    },
+    props: [],
+    data() {
+      return {
+        features: {
+          outdoors: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {
+                  Name: "Shoshone Falls",
+                  Address: "4155 Shoshone Falls Grade, Twin Falls, ID 83301"
+                },
+                geometry: { type: "Point", coordinates: [-114.40064, 42.59507] }
               },
-              geometry: { type: "Point", coordinates: [42.59507, -114.40064] }
-            },
-            {
-              type: "Feature",
-              properties: {
-                Name: "Twin Falls City Park",
-                Address: "400 Shoshone St E, Twin Falls, ID 83301"
+              {
+                type: "Feature",
+                properties: {
+                  Name: "Twin Falls City Park",
+                  Address: "400 Shoshone St E, Twin Falls, ID 83301"
+                },
+                geometry: { type: "Point", coordinates: [-114.4659, 42.5582] }
+              }
+            ]
+          },
+          foodAndDrink: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {
+                  Name: "Koto Brewing Co",
+                  Address: "156 Main Ave W, Twin Falls, ID 83301"
+                },
+                geometry: { type: "Point", coordinates: [-114.47104, 42.55655] }
               },
-              geometry: { type: "Point", coordinates: [42.5582, -114.4659] }
-            }
-          ]
-        },
-        FoodAndDrink: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {
-                Name: "9 Beans and a Burrito",
-                Address: "764 Cheney Dr, Twin Falls, ID 83301"
-              },
-              geometry: { type: "Point", coordinates: [42.57176, -114.6183] }
-            },
-            {
-              type: "Feature",
-              properties: {
-                Name: "Koto Brewing Co",
-                Address: "156 Main Ave W., Twin Falls, ID 83301"
-              },
-              geometry: { type: "Point", coordinates: [42.57846, -114.6099] }
-            }
-          ]
+              {
+                type: "Feature",
+                properties: {
+                  Name: "The Anchor Bistro",
+                  Address: "334 Blue Lakes Blvd N, Twin Falls, ID 83301"
+                },
+                geometry: { type: "Point", coordinates: [-114.46031, 42.56786] }
+              }
+            ]
+          }
         }
+      };
+    },
+    computed: {},
+    methods: {
+      genMapLayers() {
+        map.addLayer({
+          id: 'outdoors',
+          type: 'symbol',
+          source: {
+            type: 'geojson',
+            data: this.features.outdoors
+          },
+          layout: {
+            'icon-image': 'picnic-site-15',
+            'icon-allow-overlap': true
+          }
+        });
+        map.addLayer({
+          id: 'food-and-drink',
+          type: 'symbol',
+          source: {
+            type: 'geojson',
+            data: this.features.foodAndDrink
+          },
+          layout: {
+            'icon-image': 'bar-15',
+            'icon-allow-overlap': true
+          }
+        });
+      },
+      initMapControls() {
+        //NOTE User Location - May want to better handle location enable
+        map.addControl(new MapBoxGL.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true
+          },
+          trackUserLocation: true
+        }));
+      },
+      initMapIconsPopup() {
+        map.on('mousemove', function (e) {
+          let features = map.queryRenderedFeatures(e.point, { layers: ['outdoors', 'food-and-drink'] });
+          if (!features.length) {
+            popup.remove();
+            return;
+          }
+
+          let feature = features[0];
+
+          popup.setLngLat(feature.geometry.coordinates).setHTML(feature.properties.Name).addTo(map);
+        })
+
       }
-    };
-  },
-  computed: {},
-  methods: {},
-  components: {}
-};
+    },
+    components: {}
+  };
 </script>
 
 <style scoped>
-#map-box {
-    height: 50vh;
-}
+  #map-box {
+    height: 80vh;
+  }
 </style>

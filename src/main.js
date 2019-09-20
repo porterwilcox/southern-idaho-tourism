@@ -4,9 +4,12 @@ import router from './router'
 import store from './store'
 import './registerServiceWorker'
 import MQ from 'vue-mq'
+import VueQrcodeReader from "vue-qrcode-reader";
+import 'vue-qrcode-reader/dist/vue-qrcode-reader.css'
 
 Vue.config.productionTip = false
 
+Vue.use(VueQrcodeReader);
 Vue.use(MQ, {
   breakpoints: {
     1: 576, //sm...
