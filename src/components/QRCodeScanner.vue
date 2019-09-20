@@ -5,16 +5,16 @@
       <p>loading camera...</p>
     </div>
     <qrcode-stream @init="onInit" @detect="onDetect" class="h-100">
-        <div class="qr-overlay-container w-100 h-100 d-flex flex-column">
-            <div class="qr-overlay-inner-container h-50 d-flex justify-content-around align-items-center">
-                <div class="qr-overlay-corner-border s-"></div>
-                <div class="qr-overlay-corner-border s-"></div>
-            </div>
-            <div class="qr-overlay-inner-container h-50 d-flex justify-content-around align-items-center">
-                <div class="qr-overlay-corner-border s-"></div>
-                <div class="qr-overlay-corner-border s-"></div>
-            </div>
+      <div class="qr-overlay-container w-100 h-100 flex-column d-none">
+        <div class="qr-overlay-inner-container h-50 d-flex align-items-center">
+          <div class="qr-overlay-corner-border qr-b-1"></div>
+          <div class="qr-overlay-corner-border qr-b-2"></div>
         </div>
+        <div class="qr-overlay-inner-container h-50 d-flex align-items-center">
+          <div class="qr-overlay-corner-border qr-b-3"></div>
+          <div class="qr-overlay-corner-border qr-b-4"></div>
+        </div>
+      </div>
     </qrcode-stream>
   </div>
 </template>
@@ -34,6 +34,9 @@ export default {
       try {
         await promise;
         this.cameraDisplayLoading = false;
+        document
+          .querySelector(".qr-overlay-container")
+          .classList.replace("d-none", "d-flex");
       } catch (error) {
         //TODO complete graceful error handling on init
         if (error.name === "NotAllowedError") {
@@ -53,36 +56,63 @@ export default {
         // hide loading indicator
       }
     },
-    async onDetect (promise) {
-    try {
-      const {
-        imageData,    // raw image data of image/frame
-        content,      // decoded String
-        location      // QR code coordinates
-      } = await promise
-        console.log({ imageData, content, location })
-      // ...
-    } catch (error) {
-      // ...
+    async onDetect(promise) {
+      try {
+        let {
+          imageData, // raw image data of image/frame
+          content, // decoded String
+          location // QR code coordinates
+        } = await promise;
+        console.log({ imageData, content, location });
+        content = JSON.parse(content);
+        if (
+          content.length === 2 &&
+          content.every((n, i) => {
+            let min = i == 0 ? -180 : -90;
+            return n >= min && n <= Math.abs(min);
+          })
+        ) {
+          this.$store.dispatch("setCenter", content);
+        }
+
+        document
+          .querySelector(".qr-overlay-container")
+          .classList.replace("d-flex", "d-none");
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
   },
   components: {}
 };
 </script>
 
 <style>
-.qr-overlay-container {
-    border: 1px solid red;
-}
 .qr-overlay-inner-container {
-    border: 1px solid blue;    
+  justify-content: space-evenly;
 }
 .qr-overlay-corner-border {
-    border: 1px solid green;    
+  border: 5px outset rgba(0, 0, 0, 0.5);
+  width: 25%;
+  height: 50%;
 }
-.s- {
-    width: 30%;
-    height: 30%;
+.qr-overlay-corner-border {
+  border-radius: 5%;
+}
+.qr-b-1 {
+  border-right: none;
+  border-bottom: none;
+}
+.qr-b-2 {
+  border-left: none;
+  border-bottom: none;
+}
+.qr-b-3 {
+  border-right: none;
+  border-top: none;
+}
+.qr-b-4 {
+  border-left: none;
+  border-top: none;
 }
 </style>

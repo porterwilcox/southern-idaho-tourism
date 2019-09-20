@@ -8,17 +8,12 @@
 
   let map;
   let popup = new MapBoxGL.Popup();
+  let navControl = new MapBoxGL.NavigationControl();
 
   export default {
     name: "map-box",
     mounted() {
-      map = new MapBoxGL.Map({
-        container: "map-box",
-        style: "mapbox://styles/mapbox/satellite-streets-v10",
-        center: [-114.46028, 42.56318],
-        zoom: 12,
-        accessToken: MapBoxAccessToken
-      });
+      map = this.initMap()
       map.on('load', () => {
         this.genMapLayers()
         this.initMapControls()
@@ -74,8 +69,21 @@
         }
       };
     },
-    computed: {},
+    computed: {
+      centerOfMap() {
+        return this.$store.state.center
+      }
+    },
     methods: {
+      initMap(center = false) {
+        return new MapBoxGL.Map({
+          container: "map-box",
+          style: "mapbox://styles/mapbox/satellite-streets-v10",
+          center: center ? center : [-114.46028, 42.56318],
+          zoom: center ? 15 : 12,
+          accessToken: MapBoxAccessToken
+        });
+      },
       genMapLayers() {
         map.addLayer({
           id: 'outdoors',
@@ -110,6 +118,8 @@
           },
           trackUserLocation: true
         }));
+        // NOTE Cardinal directions
+        map.addControl(navControl, 'top-left');
       },
       initMapIconsPopup() {
         map.on('mousemove', function (e) {
@@ -126,7 +136,12 @@
 
       }
     },
-    components: {}
+    components: {},
+    watch: {
+      centerOfMap(center) {
+        if (center.length) map = this.initMap(center)
+      }
+    }
   };
 </script>
 
