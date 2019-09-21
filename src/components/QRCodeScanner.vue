@@ -72,7 +72,12 @@ export default {
             return n >= min && n <= Math.abs(min);
           })
         ) {
-          this.$store.dispatch("setCenter", content);
+          try {
+            this.$store.dispatch("setCenter", content);
+            this.$emit('exitCamera');
+          } catch (error) {
+            console.log(error)
+          }
         }
 
         document

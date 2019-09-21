@@ -101,19 +101,20 @@
       </div>
     </div>
     <!-- NOTE commented out to limit api hits when developing other features -->
-    <div class="row justify-content-center">
-      <map-box class="w-75"></map-box>
+    <div class="row justify-content-center py-3">
+      <map-box :trackUser="triggerGeolocate" class="w-75"></map-box>
     </div>
-    <div v-if="!scanQR" @click="scanQR = true" class="text-center py-3 action">
-      <img
-        src="https://raw.githubusercontent.com/gruhn/vue-qrcode-reader/master/.github/logo.png"
-        height="30px"
-        alt="qr-code"
-      />
-      <p class="text-link-green">Click to Scan QR Code</p>
+    <div v-if="!scanQR" class="position-relative fade-in">
+      <p @click="triggerGeolocate = true" class="hide-after-geolocate m-0 text-right action"><i>enable geolocation</i></p>
+      <img @click="triggerGeolocate = true" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGiRy0kSH769Iw-XyVSH4jluiG3WTsju09u8Yh6nQZ1-Xs2XzQ" class="hide-after-geolocate arrow action">
+      <p class="hide-after-geolocate my-2 text-secondary border-left border-top text-right w-50">or</p>
+      <div @click="scanQR = true" class="text-center my-3 action border-left border-bottom">
+        <img src="https://raw.githubusercontent.com/gruhn/vue-qrcode-reader/master/.github/logo.png" height="30px" alt="qr-code" />
+        <div class="text-link-green m-0" v-html="qrMessage"></div>
+      </div>
     </div>
     <div class="py-3" v-else>
-      <QRCodeScanner />
+      <QRCodeScanner @exitCamera="exitCamera" />
     </div>
     <footer class="row py-3 bg-link-green align-items-center justify-content-end">
       <p class="text-dark m-0">porter wilcox 2019</p>
@@ -129,14 +130,26 @@ export default {
   name: "home",
   data() {
     return {
-      scanQR: false
+      scanQR: false,
+      triggerGeolocate: false,
+      qrMessage: '<p class="h-underline">scan to locate current position on map</p>'
     };
+  },
+  methods: {
+    exitCamera() {
+      this.scanQR = false;
+      this.qrMessage = ["AWESOME", "SWEET", "GOT IT"][Math.floor(Math.random() * 3)] + "!<p style='font-size: xx-small' class='h-underline'>scan another</p>"
+      setTimeout(() => {
+        let helpers = document.querySelectorAll('.hide-after-geolocate')
+        if (helpers.length === 3) helpers[2].classList.replace('hide-after-geolocate', 'd-none')
+      }, 100)
+    }
   },
   components: { MapBox, QRCodeScanner }
 };
 </script>
 
-<style scoped>
+<style>
 .caro-text-container {
   z-index: 1;
   animation: caption-left 1s 1 cubic-bezier(0.985, 0.005, 0.265, 1);
@@ -182,13 +195,6 @@ export default {
   z-index: 16;
 }
 
-@media (max-width: 768px) {
-  .card {
-    top: 0;
-    margin: 1rem 0;
-  }
-}
-
 .card2 {
   animation-delay: 0.05s;
 }
@@ -220,7 +226,48 @@ export default {
   text-transform: uppercase;
 }
 
-.text-center.py-3.action:hover p {
+.text-center.my-3.action:hover .h-underline {
   text-decoration: underline;
+}
+.arrow {
+  height: 2rem;
+  transform: rotateZ(140deg);
+  position: absolute;
+  top: -5vh;
+  right: 5vw;
+}
+.fade-in-out {
+  animation-name: blink;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  animation-iteration-count: 3;
+  animation-delay: 1s;
+}
+@keyframes blink {
+  80% {
+    opacity: .8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation-name: fade-appear;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+}
+
+
+@media (max-width: 768px) {
+  .card {
+    top: 0;
+    margin: 1rem 0;
+  }
+  .arrow {
+  transform: rotateZ(160deg);
+    right: -2vw;
+  }
 }
 </style>
