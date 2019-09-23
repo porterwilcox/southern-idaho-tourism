@@ -212,6 +212,7 @@
           //NOTE hide geolocate toggle helpers
           document.querySelectorAll('.hide-after-geolocate').forEach(h => h.classList.replace('hide-after-geolocate', 'd-none'))
         })
+        userLocationToggle.on('error', e => alert(e.message))
 
         // NOTE Cardinal directions
         map.addControl(navControl, 'bottom-right');

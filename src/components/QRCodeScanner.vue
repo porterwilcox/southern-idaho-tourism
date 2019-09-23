@@ -38,6 +38,7 @@ export default {
           .querySelector(".qr-overlay-container")
           .classList.replace("d-none", "d-flex");
       } catch (error) {
+        alert(error.message)
         //TODO complete graceful error handling on init
         if (error.name === "NotAllowedError") {
           // user denied camera access permisson

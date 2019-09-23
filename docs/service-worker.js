@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.3d2bcf83ef7993fdd2adad9db75d698f.js"
+  "/precache-manifest.ee91d4b995b0dae7d7fdeabfcebb8f5e.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "southern-idaho-tourism"});
