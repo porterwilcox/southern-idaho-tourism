@@ -28,7 +28,7 @@
         </div>
         <div class="carousel-item">
           <img
-            src="http://exumguides.com/wp-content/uploads/2014/01/IMG_1621.jpg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqmgDvn5FPFCLD9G0ao-VgvovNEl588WLfc1vmVOjDLTrVYjx-"
             class="d-block w-100"
             height="400px"
           />
